@@ -9,6 +9,12 @@
 #include <QMediaPlayer>
 #include <QFileDialog>
 
+struct time
+{
+    int min;
+    int sec;
+};
+
 namespace Ui {
 class MainWindow;
 }
@@ -33,6 +39,9 @@ private slots:
     void slotStopMusic();
 
     void on_sliderLevelVolume_valueChanged(int value);
+    void on_sliderProgress_sliderMoved(int position);
+    void onPositionChanged(int position);
+    void onDurationChanged(int duration);
 
     void on_pbPauseMusic_clicked();
 
@@ -47,6 +56,7 @@ private:
     QMediaPlayer* player;
 
     int levelVolume;
+    struct time curTime;        // aktualna pozycja odtwarzanej piosenki w minutach i sekundach
 };
 
 #endif // MAINWINDOW_H

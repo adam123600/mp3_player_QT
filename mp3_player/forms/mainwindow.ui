@@ -44,8 +44,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>219</width>
-       <height>389</height>
+       <width>217</width>
+       <height>387</height>
       </rect>
      </property>
     </widget>
@@ -56,7 +56,7 @@
       <x>310</x>
       <y>60</y>
       <width>141</width>
-      <height>58</height>
+      <height>74</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -175,9 +175,16 @@
           </widget>
          </item>
          <item>
-          <widget class="QProgressBar" name="progressBar">
-           <property name="value">
-            <number>24</number>
+          <widget class="QLabel" name="labelProgress">
+           <property name="text">
+            <string> 0:00</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="sliderProgress">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -237,7 +244,7 @@
      <x>0</x>
      <y>0</y>
      <width>1029</width>
-     <height>22</height>
+     <height>29</height>
     </rect>
    </property>
   </widget>
