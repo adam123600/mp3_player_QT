@@ -91,6 +91,9 @@ MainWindow::MainWindow(QWidget *parent) :
     pauseState->addTransition(ui->pbPlayMusic, SIGNAL(clicked()), playState);
     pauseState->addTransition(ui->pbStopMusic, SIGNAL(clicked()), stopState);
 
+    // progress bar, nie pytajcie czemu tak, inaczej nie działa
+    connect( player, &QMediaPlayer::positionChanged, this, &MainWindow::onPositionChanged );        // gdy zmienia się pozycja w piosence to player wysyła sygnał positionChanged
+    connect( player, &QMediaPlayer::durationChanged, this, &MainWindow::onDurationChanged );        // jak player wczyta z pliku piosenkę to ustawia swój parametr duration i wysyła sygnał durationChanged
 
 
 
@@ -141,6 +144,26 @@ void MainWindow::on_sliderLevelVolume_valueChanged(int value)
 {
     levelVolume = value;
     player->setVolume(levelVolume);
+}
+
+void MainWindow::on_sliderProgress_sliderMoved(int position)
+{
+    player->setPosition(position);
+}
+
+void MainWindow::onPositionChanged(int position)
+{
+    ui->sliderProgress->setValue(position);
+    curTime.min = position/(1000*60);            // pozycja przez 1000*60 milisekund = 60 sekund
+    curTime.sec = (position/1000)%60;            // pozycja przez 1000 milisekund daje czyste sekundy, modulo 60 resetuje sekundy gdy dobiją do 59
+    QString s;
+    s.sprintf("%2d:%02d", curTime.min, curTime.sec);
+    ui->labelProgress->setText(s);
+}
+
+void MainWindow::onDurationChanged(int duration)
+{
+    ui->sliderProgress->setMaximum(duration);
 }
 
 void MainWindow::on_pbPauseMusic_clicked()
