@@ -50,35 +50,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QSlider" name="sliderLevelVolume">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>260</y>
-      <width>381</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="value">
-     <number>50</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>220</y>
-      <width>201</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Poziom głośności</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
@@ -121,64 +92,6 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>280</y>
-      <width>391</width>
-      <height>171</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Aktualnie grane</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelNowPlaySong">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QProgressBar" name="progressBar">
-       <property name="value">
-        <number>24</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QPushButton" name="pbPlayMusic">
-         <property name="text">
-          <string>Start</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pbPauseMusic">
-         <property name="text">
-          <string>Pause</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pbStopMusic">
-         <property name="text">
-          <string>Stop</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
       <x>820</x>
       <y>0</y>
       <width>171</width>
@@ -213,6 +126,107 @@
         <string>Zapisz</string>
        </property>
       </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>180</y>
+      <width>331</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Poziom głośności</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="sliderLevelVolume">
+         <property name="value">
+          <number>50</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Aktualnie grane</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelNowPlaySong">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="progressBar">
+           <property name="value">
+            <number>24</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="pbPlayMusic">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pbPauseMusic">
+             <property name="text">
+              <string>Pause</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pbStopMusic">
+             <property name="text">
+              <string>Stop</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QPushButton" name="pbNextSingiel">
+         <property name="text">
+          <string>Następny </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pbPreviousSingiel">
+         <property name="text">
+          <string>Poprzedni</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

@@ -147,3 +147,13 @@ void MainWindow::on_pbPauseMusic_clicked()
 {
     player->pause();
 }
+
+void MainWindow::on_pbNextSingiel_clicked()
+{
+
+}
+
+void MainWindow::on_pbPreviousSingiel_clicked()
+{
+
+}

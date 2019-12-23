@@ -36,6 +36,10 @@ private slots:
 
     void on_pbPauseMusic_clicked();
 
+    void on_pbNextSingiel_clicked();
+
+    void on_pbPreviousSingiel_clicked();
+
 private:
     Ui::MainWindow *ui;
 
