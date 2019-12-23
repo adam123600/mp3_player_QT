@@ -34,6 +34,8 @@ private slots:
 
     void on_sliderLevelVolume_valueChanged(int value);
 
+    void on_pbPauseMusic_clicked();
+
 private:
     Ui::MainWindow *ui;
 

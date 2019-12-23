@@ -118,7 +118,7 @@
      <string>Wizualizuj</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>300</x>
@@ -159,6 +159,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pbPauseMusic">
+         <property name="text">
+          <string>Pause</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pbStopMusic">
          <property name="text">
           <string>Stop</string>
@@ -169,7 +176,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>820</x>

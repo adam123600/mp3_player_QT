@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto playState = new QState(stateMachine);
     auto errorState = new QState(stateMachine);
     auto stopState = new QState(stateMachine);
+    auto pauseState = new QState(stateMachine);
 
 
     // assignProperty to states
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     startState->assignProperty(ui->pbVisualization, "enabled", "false");
     startState->assignProperty(ui->pbPlayMusic, "enabled", "false");
     startState->assignProperty(ui->pbStopMusic, "enabled", "false");
+    startState->assignProperty(ui->pbPauseMusic, "enabled", "false");
 
     // przyblokowana playlista ---> odblokuj sobie!
     startState->assignProperty(ui->pbNewPlaylist, "enabled", "false");
@@ -43,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     playState->assignProperty(ui->pbPlayMusic, "enabled", "false");
     playState->assignProperty(ui->pbStopMusic, "enabled", "true");
     playState->assignProperty(ui->pbAddSong, "enabled", "false");
+    playState->assignProperty(ui->pbPauseMusic, "enabled", "true");
 
     // errorState
     errorState->assignProperty(ui->pbAddSong, "enabled", "true");
@@ -55,6 +58,11 @@ MainWindow::MainWindow(QWidget *parent) :
     stopState->assignProperty(ui->pbStopMusic, "enabled", "false");
     stopState->assignProperty(ui->pbPlayMusic, "enabled", "true");
     stopState->assignProperty(ui->pbAddSong, "enabled", "true");
+
+    // pauseState
+    pauseState->assignProperty(ui->pbStopMusic, "enabled", "true");
+    pauseState->assignProperty(ui->pbPlayMusic, "enabled", "true");
+    pauseState->assignProperty(ui->pbPauseMusic, "enabled", "false");
 
     //////////////////////////////////////////////////////////////////
 
@@ -78,6 +86,12 @@ MainWindow::MainWindow(QWidget *parent) :
     stopState->addTransition(ui->pbAddSong, SIGNAL(clicked()), openState);
     stopState->addTransition(ui->pbPlayMusic, SIGNAL(clicked()), playState);
 
+    playState->addTransition(ui->pbPauseMusic, SIGNAL(clicked()), pauseState);
+
+    pauseState->addTransition(ui->pbPlayMusic, SIGNAL(clicked()), playState);
+    pauseState->addTransition(ui->pbStopMusic, SIGNAL(clicked()), stopState);
+
+
 
 
     // start machine
@@ -93,7 +107,7 @@ MainWindow::~MainWindow()
 void MainWindow::slotPlay()
 {
 //    player = new QMediaPlayer;
-      player->setMedia(QUrl::fromLocalFile(songName));
+      //player->setMedia(QUrl::fromLocalFile(songName));
       player->play();
 }
 
@@ -105,11 +119,13 @@ void MainWindow::slotOpen()
     if (!song.open(QIODevice::ReadOnly) || !songName.endsWith(".mp3", Qt::CaseSensitive))
     {
         ui->labelNowPlaySong->setText("Nie udalo sie otworzyc mp3");
+
         emit sigError();
     }
 
     else
     {
+        player->setMedia(QUrl::fromLocalFile(songName));
         ui->labelNowPlaySong->setText(QFileInfo(songName).fileName()); // wyswietli tylko nazwe, nie cala sciezke
         emit sigOpen();
     }
@@ -125,4 +141,9 @@ void MainWindow::on_sliderLevelVolume_valueChanged(int value)
 {
     levelVolume = value;
     player->setVolume(levelVolume);
+}
+
+void MainWindow::on_pbPauseMusic_clicked()
+{
+    player->pause();
 }
