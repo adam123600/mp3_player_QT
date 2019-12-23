@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // playState
     playState->assignProperty(ui->pbPlayMusic, "enabled", "false");
     playState->assignProperty(ui->pbStopMusic, "enabled", "true");
+    playState->assignProperty(ui->pbAddSong, "enabled", "false");
 
     // errorState
     errorState->assignProperty(ui->pbAddSong, "enabled", "true");
@@ -53,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // stopState
     stopState->assignProperty(ui->pbStopMusic, "enabled", "false");
     stopState->assignProperty(ui->pbPlayMusic, "enabled", "true");
+    stopState->assignProperty(ui->pbAddSong, "enabled", "true");
 
     //////////////////////////////////////////////////////////////////
 
