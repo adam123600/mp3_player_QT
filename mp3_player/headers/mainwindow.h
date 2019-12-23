@@ -8,6 +8,9 @@
 #include <QMediaPlaylist>
 #include <QMediaPlayer>
 #include <QFileDialog>
+#include <QInputDialog>
+#include <QDirIterator>
+#include <memory>
 
 struct time
 {
@@ -26,11 +29,14 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    bool loadPlaylists();
 
 signals:
     void sigError();
     void sigOpen();
     void sigStopMusic();
+    void sigHasPlaylist();
+    void sigSongChange();
 
 private slots:
 
@@ -49,11 +55,16 @@ private slots:
 
     void on_pbPreviousSingiel_clicked();
 
+    void on_pbNewPlaylist_clicked();
+    void on_listSongs_itemDoubleClicked();
+    void on_listPlaylists_itemDoubleClicked();
+
 private:
     Ui::MainWindow *ui;
 
     QString songName;
     QMediaPlayer* player;
+    std::unique_ptr<QMediaPlaylist> playlist;
 
     int levelVolume;
     struct time curTime;        // aktualna pozycja odtwarzanej piosenki w minutach i sekundach
