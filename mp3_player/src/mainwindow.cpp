@@ -8,13 +8,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     player = new QMediaPlayer;
+    playlist = std::make_unique<QMediaPlaylist>();
     levelVolume = 50; // domyslna wartosc dzwieku
-
 
     // stateMachine
     auto stateMachine = new QStateMachine(this);
 
     auto startState = new QState(stateMachine);
+    auto withPlaylistState = new QState(stateMachine);
     auto openState = new QState(stateMachine);
     auto playState = new QState(stateMachine);
     auto errorState = new QState(stateMachine);
@@ -24,18 +25,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // assignProperty to states
     // startState
-    startState->assignProperty(ui->pbAddSong, "enabled", "true");
+    startState->assignProperty(ui->pbAddSong, "enabled", "false");
     startState->assignProperty(ui->pbDeleteSong, "enabled", "false");
     startState->assignProperty(ui->pbVisualization, "enabled", "false");
     startState->assignProperty(ui->pbPlayMusic, "enabled", "false");
     startState->assignProperty(ui->pbStopMusic, "enabled", "false");
     startState->assignProperty(ui->pbPauseMusic, "enabled", "false");
-
-    // przyblokowana playlista ---> odblokuj sobie!
-    startState->assignProperty(ui->pbNewPlaylist, "enabled", "false");
-    startState->assignProperty(ui->pbLoadPlaylist, "enabled", "false");
+    startState->assignProperty(ui->pbNewPlaylist, "enabled", "true");
     startState->assignProperty(ui->pbDeletePlaylist, "enabled", "false");
-    startState->assignProperty(ui->pbSavePlaylist, "enabled", "false");
+
+    // withPlaylistState
+    withPlaylistState->assignProperty(ui->pbAddSong, "enabled", "true");
+    withPlaylistState->assignProperty(ui->pbPlayMusic, "enabled", "true");
+    withPlaylistState->assignProperty(ui->pbDeletePlaylist, "enabled", "true");
 
     // openState
     openState->assignProperty(ui->pbAddSong, "enabled", "true");
@@ -44,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // playState
     playState->assignProperty(ui->pbPlayMusic, "enabled", "false");
     playState->assignProperty(ui->pbStopMusic, "enabled", "true");
-    playState->assignProperty(ui->pbAddSong, "enabled", "false");
+    playState->assignProperty(ui->pbAddSong, "enabled", "true");
     playState->assignProperty(ui->pbPauseMusic, "enabled", "true");
 
     // errorState
@@ -70,7 +72,11 @@ MainWindow::MainWindow(QWidget *parent) :
     // przejscia + connecty
 
     startState->addTransition(ui->pbAddSong, SIGNAL(clicked()), openState);
+    startState->addTransition(this, SIGNAL(sigHasPlaylist()), withPlaylistState);
+    startState->addTransition(this,SIGNAL(sigSongChange()), playState);
     connect(openState, SIGNAL(entered()), this, SLOT(slotOpen()));
+
+    withPlaylistState->addTransition(ui->pbPlayMusic,SIGNAL(clicked()),playState);
 
     openState->addTransition(this, SIGNAL(sigOpen()), playState);
     openState->addTransition(this, SIGNAL(sigError()), errorState);
@@ -91,12 +97,19 @@ MainWindow::MainWindow(QWidget *parent) :
     pauseState->addTransition(ui->pbPlayMusic, SIGNAL(clicked()), playState);
     pauseState->addTransition(ui->pbStopMusic, SIGNAL(clicked()), stopState);
 
+    connect(this, SIGNAL(sigSongChange()), SLOT(slotPlay()));
+    connect(ui->pbAddSong, SIGNAL(clicked()), SLOT(slotOpen()));
 
-
+    if(loadPlaylists()){
+        startState->assignProperty(ui->pbAddSong, "enabled", "true");
+        startState->assignProperty(ui->pbDeletePlaylist, "enabled", "true");
+    }
 
     // start machine
     stateMachine->setInitialState(startState);
     stateMachine->start();
+
+
 }
 
 MainWindow::~MainWindow()
@@ -104,30 +117,47 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bool MainWindow::loadPlaylists()
+{
+    QString playlistsPath = QDir::currentPath().append("/playlists/");
+    QDirIterator iterator(playlistsPath,QDir::Files);
+    bool hasPlaylist = false;
+    while (iterator.hasNext()) {
+
+        QFileInfo playlistFile(iterator.next());
+        QString playlistName = playlistFile.baseName();
+
+        ui->listPlaylists->addItem(playlistName);
+        hasPlaylist = true;
+    }
+    return hasPlaylist;
+}
+
 void MainWindow::slotPlay()
 {
-//    player = new QMediaPlayer;
-      //player->setMedia(QUrl::fromLocalFile(songName));
+      auto songName = ui->listSongs->currentItem()->text();
+      ui->labelNowPlaySong->setText(songName);
       player->play();
 }
 
 void MainWindow::slotOpen()
 {
-    songName = QFileDialog::getOpenFileName(this, "Open a File", "home/student");
-    QFile song(songName);
-
-    if (!song.open(QIODevice::ReadOnly) || !songName.endsWith(".mp3", Qt::CaseSensitive))
-    {
-        ui->labelNowPlaySong->setText("Nie udalo sie otworzyc mp3");
-
-        emit sigError();
+    auto fileNames = QFileDialog::getOpenFileNames(this, tr("Choose songs"),
+                                                  QDir::currentPath(),
+                                                  tr("Sound files (*.mp3 *.wav)"));
+    for(auto fileName: fileNames) {
+        playlist->addMedia(QMediaContent(QUrl::fromLocalFile(fileName)));
+        ui->listSongs->addItem(QUrl(fileName).fileName());
     }
 
-    else
-    {
-        player->setMedia(QUrl::fromLocalFile(songName));
-        ui->labelNowPlaySong->setText(QFileInfo(songName).fileName()); // wyswietli tylko nazwe, nie cala sciezke
-        emit sigOpen();
+    auto playlistName = ui->listPlaylists->currentItem()->text();
+    QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
+
+    if(playlist->save(QUrl::fromLocalFile(filePath),"m3u")){
+        qDebug() << "Playlist saved succesfully";
+        emit sigHasPlaylist();
+    } else {
+        qDebug() << "Playlist not saved";
     }
 }
 
@@ -156,4 +186,72 @@ void MainWindow::on_pbNextSingiel_clicked()
 void MainWindow::on_pbPreviousSingiel_clicked()
 {
 
+}
+
+
+void MainWindow::on_pbNewPlaylist_clicked()
+{
+    std::unique_ptr<QInputDialog> addPlaylistDialog = std::make_unique<QInputDialog>();
+    addPlaylistDialog->resize(300,300);
+    addPlaylistDialog->setInputMode(QInputDialog::TextInput);
+    addPlaylistDialog->setWindowTitle("Create Playlist");
+    addPlaylistDialog->setOkButtonText("Choose songs");
+    addPlaylistDialog->setLabelText("Name your playlist");
+    addPlaylistDialog->setTextValue("new_playlist");
+
+    playlist->clear();
+    ui->listSongs->clear();
+
+    auto ok = addPlaylistDialog->exec();
+    auto playlistName = addPlaylistDialog->textValue();
+
+    if (ok && !playlistName.isEmpty()) {
+        ui->listPlaylists->addItem(playlistName);
+        auto fileNames = QFileDialog::getOpenFileNames(this, tr("Choose songs"),
+                                                      QDir::currentPath(),
+                                                      tr("Sound files (*.mp3 *.wav)"));
+        for(auto fileName: fileNames) {
+            playlist->addMedia(QMediaContent(QUrl::fromLocalFile(fileName)));
+            ui->listSongs->addItem(QUrl(fileName).fileName());
+        }
+        player->setPlaylist(playlist.get());
+
+        QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
+
+        if(playlist->save(QUrl::fromLocalFile(filePath),"m3u")){
+            qDebug() << "Playlist saved succesfully";
+            emit sigHasPlaylist();
+        } else {
+            qDebug() << "Playlist not saved";
+        }
+    }
+}
+
+void MainWindow::on_listSongs_itemDoubleClicked()
+{
+    auto currentIndex = ui->listSongs->currentRow();
+    playlist->setCurrentIndex(currentIndex);
+    emit sigSongChange();
+}
+
+void MainWindow::on_listPlaylists_itemDoubleClicked()
+{
+    ui->listSongs->clear();
+    auto playlistName = ui->listPlaylists->currentItem()->text();
+    QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
+    playlist->clear();
+    playlist->load(QUrl::fromLocalFile(filePath),"m3u");
+    player->setPlaylist(playlist.get());
+
+    QFile fileNames(filePath);
+    fileNames.open(QIODevice::ReadOnly | QIODevice::Text); //zrobic errora
+
+    ui->listSongs->clear();
+    while (!fileNames.atEnd()) {
+        auto fileName = QString(fileNames.readLine());
+        fileName.remove("\n");
+        fileName.remove("file://");
+
+        ui->listSongs->addItem(QUrl(fileName).fileName());
+    }
 }

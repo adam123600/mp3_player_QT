@@ -27,29 +27,6 @@
      <string>Lista utworów</string>
     </property>
    </widget>
-   <widget class="QScrollArea" name="scrollArea">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>60</y>
-      <width>221</width>
-      <height>391</height>
-     </rect>
-    </property>
-    <property name="widgetResizable">
-     <bool>true</bool>
-    </property>
-    <widget class="QWidget" name="scrollAreaWidgetContents">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>219</width>
-       <height>389</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
@@ -80,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>820</x>
-      <y>240</y>
+      <y>330</y>
       <width>191</width>
       <height>71</height>
      </rect>
@@ -92,38 +69,24 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>820</x>
-      <y>0</y>
-      <width>171</width>
-      <height>201</height>
+      <x>470</x>
+      <y>60</y>
+      <width>151</width>
+      <height>61</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QPushButton" name="pbNewPlaylist">
        <property name="text">
-        <string>Nowa Playlista</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pbLoadPlaylist">
-       <property name="text">
-        <string>Wczytaj</string>
+        <string>Nowa playlista</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pbDeletePlaylist">
        <property name="text">
-        <string>Usuń</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pbSavePlaylist">
-       <property name="text">
-        <string>Zapisz</string>
+        <string>Usuń playliste</string>
        </property>
       </widget>
      </item>
@@ -229,6 +192,39 @@
       </layout>
      </item>
     </layout>
+   </widget>
+   <widget class="QListWidget" name="listSongs">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>241</width>
+      <height>371</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listPlaylists">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>70</y>
+      <width>241</width>
+      <height>141</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>30</y>
+      <width>61</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Playlisty</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
