@@ -27,29 +27,6 @@
      <string>Lista utworów</string>
     </property>
    </widget>
-   <widget class="QScrollArea" name="scrollArea">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>60</y>
-      <width>221</width>
-      <height>391</height>
-     </rect>
-    </property>
-    <property name="widgetResizable">
-     <bool>true</bool>
-    </property>
-    <widget class="QWidget" name="scrollAreaWidgetContents">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>217</width>
-       <height>387</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
@@ -263,7 +240,7 @@
      <x>0</x>
      <y>0</y>
      <width>1029</width>
-     <height>29</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
