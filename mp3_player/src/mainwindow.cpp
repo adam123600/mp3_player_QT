@@ -207,12 +207,16 @@ void MainWindow::on_pbNextSingiel_clicked()
     if ( playlist->mediaCount() - 1 == playlist->currentIndex() )
     {
         playlist->setCurrentIndex(0);
+        auto currentIndex = playlist->currentIndex();
+        ui->listSongs->setCurrentRow(currentIndex);
         emit sigSongChange();
     }
 
     else
     {
         playlist->next();
+        auto currentIndex = playlist->currentIndex();
+        ui->listSongs->setCurrentRow(currentIndex);
         emit sigSongChange();
     }
 }
@@ -222,12 +226,16 @@ void MainWindow::on_pbPreviousSingiel_clicked()
     if ( playlist->currentIndex() == 0 )
     {
         playlist->setCurrentIndex(playlist->mediaCount() - 1);
+        auto currentIndex = playlist->currentIndex();
+        ui->listSongs->setCurrentRow(currentIndex);
         emit sigSongChange();
     }
 
     else
     {
         playlist->previous();
+        auto currentIndex = playlist->currentIndex();
+        ui->listSongs->setCurrentRow(currentIndex);
         emit sigSongChange();
     }
 }
