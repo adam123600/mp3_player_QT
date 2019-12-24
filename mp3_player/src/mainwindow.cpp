@@ -204,12 +204,12 @@ void MainWindow::on_pbPauseMusic_clicked()
 
 void MainWindow::on_pbNextSingiel_clicked()
 {
-
+    playlist->next();
 }
 
 void MainWindow::on_pbPreviousSingiel_clicked()
 {
-
+    playlist->previous();
 }
 
 
