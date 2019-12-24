@@ -204,12 +204,32 @@ void MainWindow::on_pbPauseMusic_clicked()
 
 void MainWindow::on_pbNextSingiel_clicked()
 {
-    playlist->next();
+    if ( playlist->mediaCount() - 1 == playlist->currentIndex() )
+    {
+        playlist->setCurrentIndex(0);
+        emit sigSongChange();
+    }
+
+    else
+    {
+        playlist->next();
+        emit sigSongChange();
+    }
 }
 
 void MainWindow::on_pbPreviousSingiel_clicked()
 {
-    playlist->previous();
+    if ( playlist->currentIndex() == 0 )
+    {
+        playlist->setCurrentIndex(playlist->mediaCount() - 1);
+        emit sigSongChange();
+    }
+
+    else
+    {
+        playlist->previous();
+        emit sigSongChange();
+    }
 }
 
 
