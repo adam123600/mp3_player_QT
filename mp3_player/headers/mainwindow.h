@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QDirIterator>
+#include <QMessageBox>
 #include <memory>
 
 namespace Ui {

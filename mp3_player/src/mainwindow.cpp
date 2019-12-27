@@ -174,6 +174,7 @@ void MainWindow::slotOpen()
 void MainWindow::slotStopMusic()
 {
     player->stop();
+    ui->labelNowPlaySong->clear();
     emit sigStopMusic();
 }
 
@@ -192,13 +193,18 @@ void MainWindow::on_pbNextSingiel_clicked()
 {
     playlist->next();
     auto currentIndex = playlist->currentIndex();
+    if(currentIndex == -1) { currentIndex = 0; }
     ui->listSongs->setCurrentRow(currentIndex);
     emit sigSongChange();
 }
 
 void MainWindow::on_pbPreviousSingiel_clicked()
 {
-
+    playlist->previous();
+    auto currentIndex = playlist->currentIndex();
+    if(currentIndex == -1) { currentIndex = 0; }
+    ui->listSongs->setCurrentRow(currentIndex);
+    emit sigSongChange();
 }
 
 
@@ -216,29 +222,36 @@ void MainWindow::on_pbNewPlaylist_clicked()
     auto playlistName = addPlaylistDialog->textValue();
 
     if (ok && !playlistName.isEmpty()) {
-        playlist->clear();
-        ui->listSongs->clear();
-        ui->listPlaylists->addItem(playlistName);
-        auto fileNames = QFileDialog::getOpenFileNames(this, tr("Choose songs"),
-                                                      QDir::currentPath(),
-                                                      tr("MP3 files (*.mp3)"));
-        for(auto fileName: fileNames) {
-            playlist->addMedia(QMediaContent(QUrl::fromLocalFile(fileName)));
-            ui->listSongs->addItem(QUrl(fileName).fileName());
-        }
-        player->setPlaylist(playlist.get());
-
-        QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
-
-        if(playlist->save(QUrl::fromLocalFile(filePath),"m3u")){
-            qDebug() << "Playlist saved succesfully";
-            emit sigHasPlaylist();
+        auto listPlaylistNames = ui->listPlaylists->findItems(playlistName,Qt::MatchExactly);
+        if(!listPlaylistNames.isEmpty()) {
+            QMessageBox::information(this,tr("Playlist warning"),
+                                 tr("This name is already taken.\nRename it."),
+                                 QMessageBox::Cancel);
         } else {
-            qDebug() << "Playlist not saved";
+            playlist->clear();
+            ui->listSongs->clear();
+            ui->listPlaylists->addItem(playlistName);
+            auto fileNames = QFileDialog::getOpenFileNames(this, tr("Choose songs"),
+                                                          QDir::currentPath(),
+                                                          tr("MP3 files (*.mp3)"));
+            for(auto fileName: fileNames) {
+                playlist->addMedia(QMediaContent(QUrl::fromLocalFile(fileName)));
+                ui->listSongs->addItem(QUrl(fileName).fileName());
+            }
+            player->setPlaylist(playlist.get());
+
+            QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
+
+            if(playlist->save(QUrl::fromLocalFile(filePath),"m3u")){
+                qDebug() << "Playlist saved succesfully";
+                emit sigHasPlaylist();
+            } else {
+                qDebug() << "Playlist not saved";
+            }
+            auto playlistRow = ui->listPlaylists->count()-1;
+            ui->listPlaylists->setCurrentRow(playlistRow);
+            ui->listSongs->setCurrentRow(0);
         }
-        auto playlistRow = ui->listPlaylists->count()-1;
-        ui->listPlaylists->setCurrentRow(playlistRow);
-        ui->listSongs->setCurrentRow(0);
     }
 }
 
@@ -260,6 +273,7 @@ void MainWindow::on_pbDeletePlaylist_clicked()
         ui->listPlaylists->setCurrentRow(0);
     } else {
         ui->listPlaylists->clear();
+        ui->labelNowPlaySong->clear();
         emit sigNoPlaylist();
     }
 }
