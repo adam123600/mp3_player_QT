@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QDirIterator>
+#include <QMessageBox>
 #include <memory>
 
 struct time
@@ -29,13 +30,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    bool loadPlaylists();
+    bool hasPlaylistsToLoad();
+    void saveAndPrintPlaylist(QString playlistName);
+
 
 signals:
     void sigError();
     void sigOpen();
     void sigStopMusic();
     void sigHasPlaylist();
+    void sigNoPlaylist();
     void sigSongChange();
 
 private slots:
@@ -56,6 +60,7 @@ private slots:
     void on_pbPreviousSingiel_clicked();
 
     void on_pbNewPlaylist_clicked();
+    void on_pbDeletePlaylist_clicked();
     void on_listSongs_itemDoubleClicked();
     void on_listPlaylists_itemDoubleClicked();
 
