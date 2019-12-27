@@ -64,6 +64,8 @@ private slots:
     void on_listPlaylists_itemDoubleClicked();
     void on_currentMediaChanged(const QMediaContent &content);
 
+    void on_radioButton_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
 

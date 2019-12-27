@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     withPlaylistState->assignProperty(ui->pbPlayMusic, "enabled", "true");
     withPlaylistState->assignProperty(ui->pbDeletePlaylist, "enabled", "true");
 
+
     // openState
     openState->assignProperty(ui->pbAddSong, "enabled", "true");
     openState->assignProperty(ui->pbDeleteSong, "enabled", "false");
@@ -214,9 +215,16 @@ void MainWindow::on_pbPauseMusic_clicked()
 
 void MainWindow::on_pbNextSingiel_clicked()
 {
+    int temp = playlist->currentIndex();
     playlist->next();
+
+    while ( temp == playlist->currentIndex() )
+        playlist->next();
+
     auto currentIndex = playlist->currentIndex();
-    if(currentIndex == -1) { currentIndex = 0; }
+    if(currentIndex == -1)
+        currentIndex = 0;
+
     ui->listSongs->setCurrentRow(currentIndex);
     emit sigSongChange();
 }
@@ -225,7 +233,10 @@ void MainWindow::on_pbPreviousSingiel_clicked()
 {
     playlist->previous();
     auto currentIndex = playlist->currentIndex();
-    if(currentIndex == -1) { currentIndex = 0; }
+
+    if(currentIndex == -1)
+        currentIndex = 0;
+
     ui->listSongs->setCurrentRow(currentIndex);
     emit sigSongChange();
 }
@@ -338,4 +349,14 @@ void MainWindow::on_currentMediaChanged(const QMediaContent &content)
     ui->labelNowPlaySong->setText(songTitle);
 }
 
+void MainWindow::on_radioButton_clicked(bool checked)
+{
+    if ( checked )
+    {
+        playlist->setPlaybackMode(QMediaPlaylist::Random);
+    }
 
+    else {
+        playlist->setPlaybackMode(QMediaPlaylist::Loop);
+    }
+}
