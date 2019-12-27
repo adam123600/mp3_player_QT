@@ -31,7 +31,6 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     bool hasPlaylistsToLoad();
-    void saveAndPrintPlaylist(QString playlistName);
 
 
 signals:
@@ -63,6 +62,7 @@ private slots:
     void on_pbDeletePlaylist_clicked();
     void on_listSongs_itemDoubleClicked();
     void on_listPlaylists_itemDoubleClicked();
+    void on_currentMediaChanged(const QMediaContent &content);
 
 private:
     Ui::MainWindow *ui;

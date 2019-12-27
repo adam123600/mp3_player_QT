@@ -107,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( player, &QMediaPlayer::durationChanged, this, &MainWindow::onDurationChanged );        // jak player wczyta z pliku piosenkę to ustawia swój parametr duration i wysyła sygnał durationChanged
     
     connect(this, SIGNAL(sigSongChange()), SLOT(slotPlay()));
+    connect(playlist.get(), &QMediaPlaylist::currentMediaChanged, this, &MainWindow::on_currentMediaChanged);
     connect(ui->pbAddSong, SIGNAL(clicked()), SLOT(slotOpen()));
 
 
@@ -146,8 +147,6 @@ bool MainWindow::hasPlaylistsToLoad()
 
 void MainWindow::slotPlay()
 {
-      auto songName = ui->listSongs->currentItem()->text();
-      ui->labelNowPlaySong->setText(songName);
       player->play();
 }
 
@@ -332,3 +331,11 @@ void MainWindow::on_listPlaylists_itemDoubleClicked()
     ui->listSongs->setCurrentRow(0);
     emit sigSongChange();
 }
+
+void MainWindow::on_currentMediaChanged(const QMediaContent &content)
+{
+    auto songTitle = content.canonicalUrl().fileName();
+    ui->labelNowPlaySong->setText(songTitle);
+}
+
+
