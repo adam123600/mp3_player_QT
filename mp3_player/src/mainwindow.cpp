@@ -410,7 +410,7 @@ void MainWindow::savePlaylist(QMediaPlaylist &playlist)
 
 void MainWindow::on_pbVisualisation_clicked()
 {
-    visualisation = new Visualisation();        // utworzenie nowego okienka
+    visualisation = new Visualisation();// utworzenie nowego okienka
     visualisation->show();                      // wyświetlenie tego okienka
     probe = new QAudioProbe();
     probe->setSource(player);                   // ustawienie, aby sonda "śledziła" to co odtwarza player
@@ -426,6 +426,7 @@ void MainWindow::processBuffer(QAudioBuffer buffer)
     // w buforze zawsze są 2304 próbki (przynajmniej na moim komputerze, sprawdzone empirycznie, nie wiem od czego to zależy)
     const qint16* data = buffer.constData<qint16>();        // próbki są w postaci short intów
 
+
     if( curSize + buffer.sampleCount() <= (1<<14) )     // 2304 próbki to za mało żeby je przetwarzać, w ciągu sekundy jest 44100 * 2 kanały = 88200 próbek
     {
         for( int i = curSize, j = 0; j < buffer.sampleCount(); i++, j++ )       // pętla dorzuca próbki z kolejnych buforów do wejściowej tablicy aż do uzyskania odpowiedniej ilości próbek
@@ -433,7 +434,7 @@ void MainWindow::processBuffer(QAudioBuffer buffer)
 
         curSize += buffer.sampleCount();
     }
-    else    // kiedy już w wejściowej tablicy jest odpowiednia ilość próbek (blisko 2^14 = 16384) następuje obliczenie transformaty i wysłanie wyników do okienka (widgetu) visualisation
+    else    // kiedy już w wejściowej tablicy jest odpowiednia ilość próbek (blisko 2^14 ~ 16384) następuje obliczenie transformaty i wysłanie wyników do okienka (widgetu) visualisation
     {
         FastFourier fft(curSize, inputArray);
         fft.Calculate();

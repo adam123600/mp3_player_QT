@@ -46,7 +46,7 @@ void FastFourier::showSpectrum( int sampleRate )
     for(int i = 0; i < length; i++)
     {
         qDebug() << "Frequency: " << i * (sampleRate)/length <<" val: "
-                 <<sqrt( outputArray[i][REAL] * outputArray[i][REAL] + outputArray[i][IMAG] * outputArray[i][IMAG]);
+                 << sqrt( outputArray[i][REAL] * outputArray[i][REAL] + outputArray[i][IMAG] * outputArray[i][IMAG]);
     }
 }
 

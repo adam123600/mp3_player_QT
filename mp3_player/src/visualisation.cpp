@@ -49,8 +49,7 @@ Visualisation::~Visualisation()
 
 void Visualisation::prepareData(int length, fftw_complex *data)
 {
-    buffer.reserve(length);
-
+    buffer.resize(length);
     if( shifted == true )           // jeśli jest ustawiony fftshift
     {
         for( int i = 0; i < length; i++ )
@@ -63,7 +62,6 @@ void Visualisation::prepareData(int length, fftw_complex *data)
             buffer.append( QPointF(i+1, sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG])) );
         axisX->setRange( 0, length );
     }
-
     series->replace(buffer);        // podmiana danych do wyświetlania na wykresie
 }
 
@@ -80,5 +78,3 @@ void Visualisation::on_radioFFTShift_clicked(bool checked)
         emit noshift();     // jak wyżej, MainWindow::noshift()
     }
 }
-
-
