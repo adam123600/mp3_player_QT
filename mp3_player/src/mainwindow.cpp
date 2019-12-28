@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     player = new QMediaPlayer;
     playlist = std::make_unique<QMediaPlaylist>();
+    actualPlaylistName = "";
+    songName = "";
     levelVolume = 50; // domyslna wartosc dzwieku
 
     // stateMachine
@@ -48,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     playState->assignProperty(ui->pbPlayMusic, "enabled", "false");
     playState->assignProperty(ui->pbStopMusic, "enabled", "true");
     playState->assignProperty(ui->pbAddSong, "enabled", "true");
+    playState->assignProperty(ui->pbDeleteSong, "enabled", "true");
     playState->assignProperty(ui->pbPauseMusic, "enabled", "true");
 
     // errorState
@@ -61,11 +64,13 @@ MainWindow::MainWindow(QWidget *parent) :
     stopState->assignProperty(ui->pbStopMusic, "enabled", "false");
     stopState->assignProperty(ui->pbPlayMusic, "enabled", "true");
     stopState->assignProperty(ui->pbAddSong, "enabled", "true");
+    stopState->assignProperty(ui->pbDeleteSong, "enabled", "true");
 
     // pauseState
     pauseState->assignProperty(ui->pbStopMusic, "enabled", "true");
     pauseState->assignProperty(ui->pbPlayMusic, "enabled", "true");
     pauseState->assignProperty(ui->pbPauseMusic, "enabled", "false");
+    pauseState->assignProperty(ui->pbDeleteSong, "enabled", "true");
 
     //////////////////////////////////////////////////////////////////
 
@@ -106,7 +111,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // progress bar, nie pytajcie czemu tak, inaczej nie działa
     connect( player, &QMediaPlayer::positionChanged, this, &MainWindow::onPositionChanged );        // gdy zmienia się pozycja w piosence to player wysyła sygnał positionChanged
     connect( player, &QMediaPlayer::durationChanged, this, &MainWindow::onDurationChanged );        // jak player wczyta z pliku piosenkę to ustawia swój parametr duration i wysyła sygnał durationChanged
-    
+
     connect(this, SIGNAL(sigSongChange()), SLOT(slotPlay()));
     connect(playlist.get(), &QMediaPlaylist::currentMediaChanged, this, &MainWindow::on_currentMediaChanged);
     connect(ui->pbAddSong, SIGNAL(clicked()), SLOT(slotOpen()));
@@ -116,6 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
         startState->assignProperty(ui->pbAddSong, "enabled", "true");
         startState->assignProperty(ui->pbDeletePlaylist, "enabled", "true");
         ui->listPlaylists->setCurrentRow(0);
+        actualPlaylistName = ui->listPlaylists->currentItem()->text();
     }
 
     // start machine
@@ -154,7 +160,7 @@ void MainWindow::slotPlay()
 void MainWindow::slotOpen()
 {
     auto playlistName = ui->listPlaylists->currentItem()->text();
-
+    actualPlaylistName = playlistName;
 
     auto fileNames = QFileDialog::getOpenFileNames(this, tr("Choose songs"),
                                                   QDir::currentPath(),
@@ -241,6 +247,35 @@ void MainWindow::on_pbPreviousSingiel_clicked()
     emit sigSongChange();
 }
 
+void MainWindow::on_pbDeleteSong_clicked()
+{
+    auto songToDelete = ui->listSongs->currentItem();
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Delete song");
+    msgBox.setText("Do you want to delete this song?");
+    msgBox.setInformativeText(songToDelete->text());
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
+
+    switch (ret) {
+      case QMessageBox::Ok:
+        {
+          auto rowToDelete = ui->listSongs->row(songToDelete);
+          playlist->removeMedia(rowToDelete);
+          ui->listSongs->removeItemWidget(songToDelete);
+          auto it = ui->listSongs->takeItem(rowToDelete);
+          savePlaylist(*playlist);
+          delete it;
+          break;
+        }
+      case QMessageBox::Cancel:
+          // Cancel was clicked
+          break;
+
+    }
+}
+
 
 void MainWindow::on_pbNewPlaylist_clicked()
 {
@@ -285,6 +320,7 @@ void MainWindow::on_pbNewPlaylist_clicked()
             auto playlistRow = ui->listPlaylists->count()-1;
             ui->listPlaylists->setCurrentRow(playlistRow);
             ui->listSongs->setCurrentRow(0);
+            actualPlaylistName = ui->listPlaylists->currentItem()->text();
         }
     }
 }
@@ -323,6 +359,7 @@ void MainWindow::on_listPlaylists_itemDoubleClicked()
 {
     ui->listSongs->clear();
     auto playlistName = ui->listPlaylists->currentItem()->text();
+    actualPlaylistName = playlistName;
     QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
     playlist->clear();
     playlist->load(QUrl::fromLocalFile(filePath),"m3u");
@@ -358,5 +395,16 @@ void MainWindow::on_radioButton_clicked(bool checked)
 
     else {
         playlist->setPlaybackMode(QMediaPlaylist::Loop);
+    }
+}
+
+void MainWindow::savePlaylist(QMediaPlaylist &playlist)
+{
+    qDebug() << actualPlaylistName;
+    QString playlistPath = QDir::currentPath().append("/playlists/"+actualPlaylistName+".m3u");
+    if(playlist.save(QUrl::fromLocalFile(playlistPath),"m3u")){
+        qDebug() << "Playlist saved succesfully";
+    } else {
+        qDebug() << "Playlist not saved";
     }
 }

@@ -58,6 +58,7 @@ private slots:
 
     void on_pbPreviousSingiel_clicked();
 
+    void on_pbDeleteSong_clicked();
     void on_pbNewPlaylist_clicked();
     void on_pbDeletePlaylist_clicked();
     void on_listSongs_itemDoubleClicked();
@@ -70,11 +71,14 @@ private:
     Ui::MainWindow *ui;
 
     QString songName;
+    QString actualPlaylistName;
     QMediaPlayer* player;
     std::unique_ptr<QMediaPlaylist> playlist;
 
     int levelVolume;
     struct time curTime;        // aktualna pozycja odtwarzanej piosenki w minutach i sekundach
+
+    void savePlaylist(QMediaPlaylist& playlist);
 };
 
 #endif // MAINWINDOW_H
