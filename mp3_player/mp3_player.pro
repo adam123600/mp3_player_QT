@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT += multimedia
+QT += charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,13 +28,20 @@ CONFIG += c++14
 
 SOURCES += \
         src/main.cpp \
-        src/mainwindow.cpp
+        src/mainwindow.cpp \
+    src/fastfourier.cpp \
+    src/visualisation.cpp
 
 HEADERS += \
-        headers/mainwindow.h
+        headers/mainwindow.h \
+    headers/fastfourier.h \
+    headers/visualisation.h
 
 FORMS += \
-        forms/mainwindow.ui
+        forms/mainwindow.ui \
+    forms/visualisation.ui
+
+LIBS += /usr/local/lib/libfftw3.a
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     songName = "";
     levelVolume = 50; // domyslna wartosc dzwieku
 
+
     // stateMachine
     auto stateMachine = new QStateMachine(this);
 
@@ -29,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // startState
     startState->assignProperty(ui->pbAddSong, "enabled", "false");
     startState->assignProperty(ui->pbDeleteSong, "enabled", "false");
-    startState->assignProperty(ui->pbVisualization, "enabled", "false");
+    startState->assignProperty(ui->pbVisualisation, "enabled", "true");
     startState->assignProperty(ui->pbPlayMusic, "enabled", "false");
     startState->assignProperty(ui->pbStopMusic, "enabled", "false");
     startState->assignProperty(ui->pbPauseMusic, "enabled", "false");
@@ -389,13 +390,10 @@ void MainWindow::on_currentMediaChanged(const QMediaContent &content)
 void MainWindow::on_radioButton_clicked(bool checked)
 {
     if ( checked )
-    {
         playlist->setPlaybackMode(QMediaPlaylist::Random);
-    }
 
-    else {
+    else
         playlist->setPlaybackMode(QMediaPlaylist::Loop);
-    }
 }
 
 void MainWindow::savePlaylist(QMediaPlaylist &playlist)
@@ -407,4 +405,51 @@ void MainWindow::savePlaylist(QMediaPlaylist &playlist)
     } else {
         qDebug() << "Playlist not saved";
     }
+}
+
+
+void MainWindow::on_pbVisualisation_clicked()
+{
+    visualisation = new Visualisation();        // utworzenie nowego okienka
+    visualisation->show();                      // wyświetlenie tego okienka
+    probe = new QAudioProbe();
+    probe->setSource(player);                   // ustawienie, aby sonda "śledziła" to co odtwarza player
+    inputArray = new double[1<<14];             // tablica wejściowa będzie przechowywać maksymalnie 2^14 (16834) próbek
+    curSize = 0;                                // początkowa ilość elementów w tablicy z próbkami
+    connect( probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)) );
+    connect( visualisation, SIGNAL(shift()), this, SLOT(shift()) );
+    connect( visualisation, SIGNAL(noshift()), this, SLOT(noshift()) );
+}
+
+void MainWindow::processBuffer(QAudioBuffer buffer)
+{
+    // w buforze zawsze są 2304 próbki (przynajmniej na moim komputerze, sprawdzone empirycznie, nie wiem od czego to zależy)
+    const qint16* data = buffer.constData<qint16>();        // próbki są w postaci short intów
+
+    if( curSize + buffer.sampleCount() <= (1<<14) )     // 2304 próbki to za mało żeby je przetwarzać, w ciągu sekundy jest 44100 * 2 kanały = 88200 próbek
+    {
+        for( int i = curSize, j = 0; j < buffer.sampleCount(); i++, j++ )       // pętla dorzuca próbki z kolejnych buforów do wejściowej tablicy aż do uzyskania odpowiedniej ilości próbek
+            inputArray[i] = (double)data[j]/SHRT_MAX;       // normalizacja próbek do wartości <-1,1>, aby wyniki transformaty nie wychodziły zbyt duże
+
+        curSize += buffer.sampleCount();
+    }
+    else    // kiedy już w wejściowej tablicy jest odpowiednia ilość próbek (blisko 2^14 = 16384) następuje obliczenie transformaty i wysłanie wyników do okienka (widgetu) visualisation
+    {
+        FastFourier fft(curSize, inputArray);
+        fft.Calculate();
+        if( shifted )
+            fft.fftshift();     // opcjonalnie fftshift jak w MatLABie
+        visualisation->prepareData( curSize, fft.getResult() );     // wysyła do okienka visualisation ilość próbek i tablicę próbek transformaty
+        curSize = 0;
+    }
+}
+
+void MainWindow::shift()
+{
+    shifted =  true;
+}
+
+void MainWindow::noshift()
+{
+    shifted = false;
 }

@@ -13,6 +13,12 @@
 #include <QMessageBox>
 #include <memory>
 
+#include <QAudioBuffer>
+#include <QAudioProbe>
+#include "headers/fastfourier.h"
+#include <QtCharts>
+#include "headers/visualisation.h"
+
 struct time
 {
     int min;
@@ -67,6 +73,11 @@ private slots:
 
     void on_radioButton_clicked(bool checked);
 
+    void on_pbVisualisation_clicked();
+    void processBuffer(QAudioBuffer buffer);
+    void shift();
+    void noshift();
+
 private:
     Ui::MainWindow *ui;
 
@@ -79,6 +90,13 @@ private:
     struct time curTime;        // aktualna pozycja odtwarzanej piosenki w minutach i sekundach
 
     void savePlaylist(QMediaPlaylist& playlist);
+
+    // ftt i wizualizacja
+    QAudioProbe* probe;
+    int curSize;
+    double* inputArray;
+    Visualisation* visualisation;       // instancja okna wizualizacji (widget)
+    bool shifted;
 };
 
 #endif // MAINWINDOW_H
