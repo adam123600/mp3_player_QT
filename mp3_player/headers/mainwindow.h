@@ -73,7 +73,7 @@ private slots:
 
     void on_radioButton_clicked(bool checked);
 
-    void on_pbVisualisation_clicked();
+    void on_pbVisualisation_clicked(bool checked);
     void processBuffer(QAudioBuffer buffer);
     void shift();
     void noshift();

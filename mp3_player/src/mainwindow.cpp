@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actualPlaylistName = "";
     songName = "";
     levelVolume = 50; // domyslna wartosc dzwieku
+    visualisation = new Visualisation();// utworzenie nowego okienka
 
 
     // stateMachine
@@ -408,17 +409,19 @@ void MainWindow::savePlaylist(QMediaPlaylist &playlist)
 }
 
 
-void MainWindow::on_pbVisualisation_clicked()
+void MainWindow::on_pbVisualisation_clicked(bool checked)
 {
-    visualisation = new Visualisation();// utworzenie nowego okienka
-    visualisation->show();                      // wyświetlenie tego okienka
-    probe = new QAudioProbe();
-    probe->setSource(player);                   // ustawienie, aby sonda "śledziła" to co odtwarza player
-    inputArray = new double[1<<14];             // tablica wejściowa będzie przechowywać maksymalnie 2^14 (16834) próbek
-    curSize = 0;                                // początkowa ilość elementów w tablicy z próbkami
-    connect( probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)) );
-    connect( visualisation, SIGNAL(shift()), this, SLOT(shift()) );
-    connect( visualisation, SIGNAL(noshift()), this, SLOT(noshift()) );
+    if ( !checked )
+    {
+        visualisation->show();                      // wyświetlenie tego okienka
+        probe = new QAudioProbe();
+        probe->setSource(player);                   // ustawienie, aby sonda "śledziła" to co odtwarza player
+        inputArray = new double[1<<14];             // tablica wejściowa będzie przechowywać maksymalnie 2^14 (16834) próbek
+        curSize = 0;                                // początkowa ilość elementów w tablicy z próbkami
+        connect( probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)) );
+        connect( visualisation, SIGNAL(shift()), this, SLOT(shift()) );
+        connect( visualisation, SIGNAL(noshift()), this, SLOT(noshift()) );
+    }
 }
 
 void MainWindow::processBuffer(QAudioBuffer buffer)
