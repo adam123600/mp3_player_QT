@@ -49,19 +49,30 @@ Visualisation::~Visualisation()
 
 void Visualisation::prepareData(int length, fftw_complex *data)
 {
-    buffer.resize(length);
+    if( buffer.size() != length )
+        buffer.resize(length);
+    if( radBuffer.size() != length )
+        radBuffer.resize(length);
+
     if( shifted == true )           // jeśli jest ustawiony fftshift
     {
         for( int i = 0; i < length; i++ )
+        {
             buffer.append( QPointF(i+1 - length/2, sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG])) );
+            radBuffer[i] = angle(data[i][REAL], data[i][IMAG]);
+        }
         axisX->setRange(-length/2, length/2);
     }
     else
     {
         for( int i = 0; i < length; i++ )
+        {
             buffer.append( QPointF(i+1, sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG])) );
+            radBuffer[i] = angle(data[i][REAL], data[i][IMAG]);
+        }
         axisX->setRange( 0, length );
     }
+    unwrap(radBuffer, unwrappedBuffer, length);
     series->replace(buffer);        // podmiana danych do wyświetlania na wykresie
 }
 
@@ -78,3 +89,29 @@ void Visualisation::on_radioFFTShift_clicked(bool checked)
         emit noshift();     // jak wyżej, MainWindow::noshift()
     }
 }
+
+double Visualisation::angle(double x, double y)
+{
+    return atan2(y,x);
+}
+
+void Visualisation::unwrap(QVector<double> inputBuffer, QVector<double> outputBuffer, int length)
+{
+    if(outputBuffer.count() != length)
+        outputBuffer.resize(length);
+    outputBuffer[0] = inputBuffer[0];
+    for ( int i = 1; i < length; i++ )
+    {
+        outputBuffer[i] = angle_norm(inputBuffer[i] - inputBuffer[i-1]);
+    }
+    inputBuffer.clear();
+}
+
+double Visualisation::angle_norm(double x)
+{
+    x = fmod( x + M_PI, M_2PI);
+    if(x < 0)
+        x+= M_2PI;
+    return x - M_PI;
+}
+

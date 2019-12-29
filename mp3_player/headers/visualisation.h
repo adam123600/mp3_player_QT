@@ -5,6 +5,10 @@
 #include <QtCharts>
 #include "fastfourier.h"
 
+
+#define M_2PI (3.1415926535897932384626433 * 2.0)
+
+
 namespace Ui {
 class Visualisation;
 }
@@ -38,6 +42,12 @@ private:
     QVBoxLayout* mainLayout;
 
     QVector<QPointF> buffer;        // vector punktów (x,y)
+    QVector<double> radBuffer;
+    QVector<double> unwrappedBuffer;
+
+    double angle(double x, double y);
+    void unwrap(QVector<double> inputBuffer, QVector<double> outputBuffer, int length);
+    inline double angle_norm(double x);
 };
 
 #endif // VISUALISATION_H
