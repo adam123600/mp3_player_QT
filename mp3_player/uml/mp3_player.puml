@@ -1,0 +1,10 @@
+@startuml
+
+[*] -down-> StartState
+
+state StartState {
+
+}
+
+
+@enduml
