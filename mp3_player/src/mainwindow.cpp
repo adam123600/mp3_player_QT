@@ -1,4 +1,3 @@
-//#include "headers/mainwindow.h"
 #include "../headers/mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -11,103 +10,95 @@ MainWindow::MainWindow(QWidget *parent) :
     playlist = std::make_unique<QMediaPlaylist>();
     actualPlaylistName = "";
     songName = "";
-    levelVolume = 50; // domyslna wartosc dzwieku
+    levelVolume = 100; // domyslna wartosc dzwieku
     visualisation = new Visualisation();// utworzenie nowego okienka
-
 
     // stateMachine
     auto stateMachine = new QStateMachine(this);
 
     auto startState = new QState(stateMachine);
-    auto withPlaylistState = new QState(stateMachine);
-    auto openState = new QState(stateMachine);
+    auto hasPlaylistState = new QState(stateMachine);
     auto playState = new QState(stateMachine);
-    auto errorState = new QState(stateMachine);
     auto stopState = new QState(stateMachine);
     auto pauseState = new QState(stateMachine);
 
-
     // assignProperty to states
     // startState
-    startState->assignProperty(ui->pbAddSong, "enabled", "false");
-    startState->assignProperty(ui->pbDeleteSong, "enabled", "false");
-    startState->assignProperty(ui->pbVisualisation, "enabled", "true");
-    startState->assignProperty(ui->pbPlayMusic, "enabled", "false");
-    startState->assignProperty(ui->pbStopMusic, "enabled", "false");
-    startState->assignProperty(ui->pbPauseMusic, "enabled", "false");
-    startState->assignProperty(ui->pbNewPlaylist, "enabled", "true");
-    startState->assignProperty(ui->pbDeletePlaylist, "enabled", "false");
+    startState->assignProperty(ui->pbNewPlaylist, "enabled", true);
+    startState->assignProperty(ui->pbDeletePlaylist, "enabled", false);
+    startState->assignProperty(ui->pbAddSong, "enabled", false);
+    startState->assignProperty(ui->pbDeleteSong, "enabled", false);
+    startState->assignProperty(ui->pbVisualisation, "enabled", false);
+    startState->assignProperty(ui->pbNextSingiel, "enabled", false);
+    startState->assignProperty(ui->pbPreviousSingiel, "enabled", false);
+    startState->assignProperty(ui->pbPlayMusic, "enabled", false);
+    startState->assignProperty(ui->pbStopMusic, "enabled", false);
+    startState->assignProperty(ui->pbPauseMusic, "enabled", false);
 
-    // withPlaylistState
-    withPlaylistState->assignProperty(ui->pbAddSong, "enabled", "true");
-    withPlaylistState->assignProperty(ui->pbPlayMusic, "enabled", "true");
-    withPlaylistState->assignProperty(ui->pbDeletePlaylist, "enabled", "true");
-
-
-    // openState
-    openState->assignProperty(ui->pbAddSong, "enabled", "true");
-    openState->assignProperty(ui->pbDeleteSong, "enabled", "false");
+    // hasPlaylistState
+    hasPlaylistState->assignProperty(ui->pbAddSong, "enabled", true);
+    hasPlaylistState->assignProperty(ui->pbDeletePlaylist, "enabled", true);
+    hasPlaylistState->assignProperty(ui->pbDeleteSong, "enabled", false);
+    hasPlaylistState->assignProperty(ui->pbVisualisation, "enabled", false);
+    hasPlaylistState->assignProperty(ui->pbNextSingiel, "enabled", false);
+    hasPlaylistState->assignProperty(ui->pbPreviousSingiel, "enabled", false);
+    hasPlaylistState->assignProperty(ui->pbPlayMusic, "enabled", false);
+    hasPlaylistState->assignProperty(ui->pbStopMusic, "enabled", false);
+    hasPlaylistState->assignProperty(ui->pbPauseMusic, "enabled", false);
 
     // playState
-    playState->assignProperty(ui->pbPlayMusic, "enabled", "false");
-    playState->assignProperty(ui->pbStopMusic, "enabled", "true");
-    playState->assignProperty(ui->pbAddSong, "enabled", "true");
-    playState->assignProperty(ui->pbDeleteSong, "enabled", "true");
-    playState->assignProperty(ui->pbPauseMusic, "enabled", "true");
-
-    // errorState
-    errorState->assignProperty(ui->pbAddSong, "enabled", "true");
-    errorState->assignProperty(ui->pbDeleteSong, "enabled", "false");
-    errorState->assignProperty(ui->pbPlayMusic, "enabled", "false");
-    errorState->assignProperty(ui->pbStopMusic, "enabled", "false");
-
+    playState->assignProperty(ui->pbPlayMusic, "enabled", false);
+    playState->assignProperty(ui->pbStopMusic, "enabled", true);
+    playState->assignProperty(ui->pbPauseMusic, "enabled", true);
+    playState->assignProperty(ui->pbNextSingiel, "enabled", true);
+    playState->assignProperty(ui->pbPreviousSingiel, "enabled", true);
+    playState->assignProperty(ui->pbDeleteSong, "enabled", true);
+    playState->assignProperty(ui->pbVisualisation, "enabled", true);
 
     // stopState
-    stopState->assignProperty(ui->pbStopMusic, "enabled", "false");
-    stopState->assignProperty(ui->pbPlayMusic, "enabled", "true");
-    stopState->assignProperty(ui->pbAddSong, "enabled", "true");
-    stopState->assignProperty(ui->pbDeleteSong, "enabled", "true");
+    stopState->assignProperty(ui->pbPlayMusic, "enabled", true);
+    stopState->assignProperty(ui->pbStopMusic, "enabled", false);
+    stopState->assignProperty(ui->pbPauseMusic, "enabled", false);
+    stopState->assignProperty(ui->pbNextSingiel, "enabled", false);
+    stopState->assignProperty(ui->pbPreviousSingiel, "enabled", false);
 
     // pauseState
-    pauseState->assignProperty(ui->pbStopMusic, "enabled", "true");
-    pauseState->assignProperty(ui->pbPlayMusic, "enabled", "true");
-    pauseState->assignProperty(ui->pbPauseMusic, "enabled", "false");
-    pauseState->assignProperty(ui->pbDeleteSong, "enabled", "true");
+    pauseState->assignProperty(ui->pbStopMusic, "enabled", true);
+    pauseState->assignProperty(ui->pbPlayMusic, "enabled", true);
+    pauseState->assignProperty(ui->pbPauseMusic, "enabled", false);
+    pauseState->assignProperty(ui->pbNextSingiel, "enabled", false);
+    pauseState->assignProperty(ui->pbPreviousSingiel, "enabled", false);
+
 
     //////////////////////////////////////////////////////////////////
 
 
-    // przejscia + connecty
+    // transitions + connects
+    startState->addTransition(this, SIGNAL(sigHasPlaylist()), hasPlaylistState);
 
-    startState->addTransition(ui->pbAddSong, SIGNAL(clicked()), openState);
-    startState->addTransition(this, SIGNAL(sigHasPlaylist()), withPlaylistState);
-    startState->addTransition(this,SIGNAL(sigSongChange()), playState);
-    connect(openState, SIGNAL(entered()), this, SLOT(slotOpen()));
+    connect(hasPlaylistState, SIGNAL(entered()), this, SLOT(slotHasSong()));
 
-    withPlaylistState->addTransition(ui->pbPlayMusic,SIGNAL(clicked()),playState);
-    withPlaylistState->addTransition(this,SIGNAL(sigNoPlaylist()),startState);
-
-    openState->addTransition(this, SIGNAL(sigOpen()), playState);
-    openState->addTransition(this, SIGNAL(sigError()), errorState);
-    openState->addTransition(this,SIGNAL(sigNoPlaylist()),startState);
-
-    errorState->addTransition(ui->pbAddSong, SIGNAL(clicked()), openState);
+    hasPlaylistState->addTransition(this,SIGNAL(sigNoPlaylist()),startState);
+    hasPlaylistState->addTransition(this,SIGNAL(sigPlaySong()),playState);
 
     connect(playState, SIGNAL(entered()), SLOT(slotPlay()));
 
     playState->addTransition(ui->pbStopMusic, SIGNAL(clicked()), stopState);
-    playState->addTransition(this,SIGNAL(sigNoPlaylist()),startState);
+    playState->addTransition(ui->pbPauseMusic, SIGNAL(clicked()), pauseState);
+    playState->addTransition(this, SIGNAL(sigNoSong()), hasPlaylistState);
+    playState->addTransition(this, SIGNAL(sigNoPlaylist()),startState);
 
     connect(stopState, SIGNAL(entered()), SLOT(slotStopMusic()));
 
-    stopState->addTransition(ui->pbAddSong, SIGNAL(clicked()), openState);
     stopState->addTransition(ui->pbPlayMusic, SIGNAL(clicked()), playState);
+    stopState->addTransition(this, SIGNAL(sigPlaySong()), playState);
+    stopState->addTransition(this, SIGNAL(sigNoSong()), hasPlaylistState);
     stopState->addTransition(this,SIGNAL(sigNoPlaylist()),startState);
-
-    playState->addTransition(ui->pbPauseMusic, SIGNAL(clicked()), pauseState);
 
     pauseState->addTransition(ui->pbPlayMusic, SIGNAL(clicked()), playState);
     pauseState->addTransition(ui->pbStopMusic, SIGNAL(clicked()), stopState);
+    pauseState->addTransition(this, SIGNAL(sigPlaySong()), playState);
+    pauseState->addTransition(this, SIGNAL(sigNoSong()), hasPlaylistState);
     pauseState->addTransition(this,SIGNAL(sigNoPlaylist()),startState);
 
     // progress bar, nie pytajcie czemu tak, inaczej nie działa
@@ -116,21 +107,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(this, SIGNAL(sigSongChange()), SLOT(slotPlay()));
     connect(playlist.get(), &QMediaPlaylist::currentMediaChanged, this, &MainWindow::on_currentMediaChanged);
-    connect(ui->pbAddSong, SIGNAL(clicked()), SLOT(slotOpen()));
-
-
-    if(hasPlaylistsToLoad()){
-        startState->assignProperty(ui->pbAddSong, "enabled", "true");
-        startState->assignProperty(ui->pbDeletePlaylist, "enabled", "true");
-        ui->listPlaylists->setCurrentRow(0);
-        actualPlaylistName = ui->listPlaylists->currentItem()->text();
-    }
+    connect(ui->pbAddSong, SIGNAL(clicked()), SLOT(slotAddSong()));
 
     // start machine
     stateMachine->setInitialState(startState);
     stateMachine->start();
 
-
+    if(hasPlaylistsToLoad()){
+        ui->listPlaylists->setCurrentRow(0);
+        actualPlaylistName = ui->listPlaylists->currentItem()->text();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -144,7 +130,6 @@ bool MainWindow::hasPlaylistsToLoad()
     QDirIterator iterator(playlistsPath,QDir::Files);
     bool hasPlaylist = false;
     while (iterator.hasNext()) {
-
         QFileInfo playlistFile(iterator.next());
         QString playlistName = playlistFile.baseName();
 
@@ -159,36 +144,49 @@ void MainWindow::slotPlay()
       player->play();
 }
 
-void MainWindow::slotOpen()
+void MainWindow::slotHasSong()
 {
-    auto playlistName = ui->listPlaylists->currentItem()->text();
-    actualPlaylistName = playlistName;
-
-    auto fileNames = QFileDialog::getOpenFileNames(this, tr("Choose songs"),
-                                                  QDir::currentPath(),
-                                                  tr("MP3 files (*.mp3)"));
-    for(auto fileName: fileNames) {
-        playlist->addMedia(QMediaContent(QUrl::fromLocalFile(fileName)));
-        ui->listSongs->addItem(QUrl(fileName).fileName());
+    if(ui->listSongs->count() != 0 ){
+        emit sigPlaySong();
     }
-
-    QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
-
-    if(playlist->save(QUrl::fromLocalFile(filePath),"m3u")){
-        qDebug() << "Playlist saved succesfully";
-        emit sigHasPlaylist();
-    } else {
-        qDebug() << "Playlist not saved";
-    }
-
 }
 
 void MainWindow::slotStopMusic()
 {
     player->stop();
-    ui->labelNowPlaySong->clear();
     emit sigStopMusic();
 }
+
+void MainWindow::slotAddSong()
+{
+    auto playlistName = ui->listPlaylists->currentItem()->text();
+    actualPlaylistName = playlistName;
+
+    auto fileNames = QFileDialog::getOpenFileNames(this, tr("Choose songs"),
+                                                   QDir::currentPath(),
+                                                   tr("MP3 files (*.mp3)"));
+
+    bool flagHasSong = false;
+    for(auto fileName: fileNames) {
+        playlist->addMedia(QMediaContent(QUrl::fromLocalFile(fileName)));
+        ui->listSongs->addItem(QUrl(fileName).fileName());
+        flagHasSong = true;
+    }
+
+    QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
+
+    if(playlist->save(QUrl::fromLocalFile(filePath),"m3u")){
+        qDebug() << "Playlist saved succesfully - slotAddSong";
+    } else {
+        qDebug() << "Playlist not saved - - slotAddSong";
+    }
+    if(flagHasSong) {
+        ui->listSongs->setCurrentRow(0);
+        emit sigPlaySong();
+        emit sigSongChange();
+    }
+}
+
 
 void MainWindow::on_sliderLevelVolume_valueChanged(int value)
 {
@@ -268,6 +266,9 @@ void MainWindow::on_pbDeleteSong_clicked()
           ui->listSongs->removeItemWidget(songToDelete);
           auto it = ui->listSongs->takeItem(rowToDelete);
           savePlaylist(*playlist);
+
+          if(ui->listSongs->count() == 0) { emit sigNoSong(); }
+
           delete it;
           break;
         }
@@ -311,13 +312,21 @@ void MainWindow::on_pbNewPlaylist_clicked()
             }
             player->setPlaylist(playlist.get());
 
+            QDir playlistDir("");
+            if(playlistDir.mkdir("playlists")) {
+                qDebug() << "Folder playlists created in build";
+            } else {
+                qDebug() << "Folder playlists already exists or ERROR";
+            }
+
             QString filePath = QDir::currentPath().append("/playlists/"+playlistName+".m3u");
 
             if(playlist->save(QUrl::fromLocalFile(filePath),"m3u")){
-                qDebug() << "Playlist saved succesfully";
+                qDebug() << "Playlist saved succesfully pbNewPlaylist clicked";
                 emit sigHasPlaylist();
+                emit sigSongChange();
             } else {
-                qDebug() << "Playlist not saved";
+                qDebug() << "Playlist not saved - pbNewPlaylist clicked";
             }
             auto playlistRow = ui->listPlaylists->count()-1;
             ui->listPlaylists->setCurrentRow(playlistRow);
@@ -354,7 +363,7 @@ void MainWindow::on_listSongs_itemDoubleClicked()
 {
     auto currentRow = ui->listSongs->currentRow();
     playlist->setCurrentIndex(currentRow);
-    emit sigSongChange();
+    emit sigPlaySong();
 }
 
 void MainWindow::on_listPlaylists_itemDoubleClicked()
@@ -379,7 +388,14 @@ void MainWindow::on_listPlaylists_itemDoubleClicked()
         ui->listSongs->addItem(QUrl(fileName).fileName());
     }
     ui->listSongs->setCurrentRow(0);
-    emit sigSongChange();
+    emit sigHasPlaylist();
+
+    if( ui->listSongs->count() != 0) {
+        emit sigPlaySong();
+        emit sigSongChange();
+    } else {
+        emit sigNoSong();
+    }
 }
 
 void MainWindow::on_currentMediaChanged(const QMediaContent &content)

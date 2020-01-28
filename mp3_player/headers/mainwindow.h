@@ -41,7 +41,8 @@ public:
 
 signals:
     void sigError();
-    void sigOpen();
+    void sigPlaySong();
+    void sigNoSong();
     void sigStopMusic();
     void sigHasPlaylist();
     void sigNoPlaylist();
@@ -50,8 +51,9 @@ signals:
 private slots:
 
     void slotPlay();
-    void slotOpen();
+    void slotHasSong();
     void slotStopMusic();
+    void slotAddSong();
 
     void on_sliderLevelVolume_valueChanged(int value);
     void on_sliderProgress_sliderMoved(int position);
@@ -59,19 +61,17 @@ private slots:
     void onDurationChanged(int duration);
 
     void on_pbPauseMusic_clicked();
-
     void on_pbNextSingiel_clicked();
-
     void on_pbPreviousSingiel_clicked();
-
     void on_pbDeleteSong_clicked();
     void on_pbNewPlaylist_clicked();
     void on_pbDeletePlaylist_clicked();
+    void on_radioButton_clicked(bool checked);
+
     void on_listSongs_itemDoubleClicked();
     void on_listPlaylists_itemDoubleClicked();
-    void on_currentMediaChanged(const QMediaContent &content);
 
-    void on_radioButton_clicked(bool checked);
+    void on_currentMediaChanged(const QMediaContent &content);
 
     void on_pbVisualisation_clicked(bool checked);
     void processBuffer(QAudioBuffer buffer);
