@@ -7,9 +7,10 @@ Visualisation::Visualisation(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setMinimumSize(1024, 768);
-
     // ********** strefa domyślnych ustawień parametrów transformaty ****************
     shifted = false;                // czy zrobić fftshift
+    spectrum = amplitude;
+    unwrapped = false;
     // ******************************************************************************
 
 
@@ -50,33 +51,57 @@ Visualisation::~Visualisation()
 void Visualisation::prepareData(int length, fftw_complex *data)
 {
     if( buffer.size() != length )
-        buffer.resize(length);
-    if( radBuffer.size() != length )
-        radBuffer.resize(length);
+        buffer.reserve(length);
+    buffer.clear();
 
-    if( shifted == true )           // jeśli jest ustawiony fftshift
+    if( yData.size() != length )
+        yData.reserve(length);
+    yData.clear();
+
+    if( spectrum == amplitude )
     {
         for( int i = 0; i < length; i++ )
+            yData.append( sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG]) );
+
+        axisY->setRange( 0, 3000 );
+    }
+    else        // spectrum == phase
+    {
+        for( int i = 0; i< length; i++ )
+            yData.append( atan2(data[i][REAL], data[i][IMAG]) );
+        if( unwrapped )
         {
-            buffer.append( QPointF(i+1 - length/2, sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG])) );
-            radBuffer[i] = angle(data[i][REAL], data[i][IMAG]);
+            yDataUnwrapped.clear();
+            if( yDataUnwrapped.size() != length )
+                yDataUnwrapped.reserve(length);
+
+            unwrap( yData, yDataUnwrapped, length );
+            yData = yDataUnwrapped;
+            axisY->setRange( -3500, 3500 );
         }
-        axisX->setRange(-length/2, length/2);
+        else
+            axisY->setRange( -4, 4 );
+    }
+
+    if( shifted )
+    {
+        for( int i = 0; i < length; i++ )
+            buffer.append( QPointF(i+1 - length/2, yData[i]) );
+
+        axisX->setRange( -length/2, length/2 );
     }
     else
     {
         for( int i = 0; i < length; i++ )
-        {
-            buffer.append( QPointF(i+1, sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG])) );
-            radBuffer[i] = angle(data[i][REAL], data[i][IMAG]);
-        }
+            buffer.append( QPointF(i+1, yData[i]) );
+
         axisX->setRange( 0, length );
     }
-    unwrap(radBuffer, unwrappedBuffer, length);
-    series->replace(buffer);        // podmiana danych do wyświetlania na wykresie
+
+    series->replace(buffer);        // podmiana danych do wyświetlania na wykresie*/
 }
 
-void Visualisation::on_radioFFTShift_clicked(bool checked)
+void Visualisation::on_cbFFTShift_clicked(bool checked)
 {
     if( checked )
     {
@@ -90,28 +115,37 @@ void Visualisation::on_radioFFTShift_clicked(bool checked)
     }
 }
 
-double Visualisation::angle(double x, double y)
+void Visualisation::on_cbUnwrap_clicked(bool checked)
 {
-    return atan2(y,x);
+    if( checked )
+        unwrapped = true;
+    else
+        unwrapped = false;
 }
 
-void Visualisation::unwrap(QVector<double> inputBuffer, QVector<double> outputBuffer, int length)
+
+
+void Visualisation::on_pbChangeSpectrum_clicked()
 {
-    if(outputBuffer.count() != length)
-        outputBuffer.resize(length);
-    outputBuffer[0] = inputBuffer[0];
-    for ( int i = 1; i < length; i++ )
+    if( spectrum == amplitude )
     {
-        outputBuffer[i] = angle_norm(inputBuffer[i] - inputBuffer[i-1]);
+        spectrum = phase;
+        ui->labelSpectrum->setText("Widmo fazowe");
     }
-    inputBuffer.clear();
+    else
+    {
+        spectrum = amplitude;
+        ui->labelSpectrum->setText("Widmo amplitudowe");
+    }
 }
 
-double Visualisation::angle_norm(double x)
-{
-    x = fmod( x + M_PI, M_2PI);
-    if(x < 0)
-        x+= M_2PI;
-    return x - M_PI;
+void Visualisation::unwrap(QVector<qreal> &in, QVector<qreal> &out, int length) {
+    if( out.size() != length )
+        out.resize(length);
+    out[0] = in[0];
+    for (int i = 1; i < length; i++) {
+        qreal d = in[i] - in[i-1];
+        d = d > M_PI ? d - 2 * M_PI : (d < -M_PI ? d + 2 * M_PI : d);
+        out[i] = out[i-1] + d;
+    }
 }
-

@@ -8,6 +8,8 @@
 
 #define M_2PI (3.1415926535897932384626433 * 2.0)
 
+enum Spectrum {amplitude, phase};
+
 
 namespace Ui {
 class Visualisation;
@@ -27,10 +29,14 @@ signals:
 
 public slots:
     void prepareData(int length, fftw_complex* data);
-    void on_radioFFTShift_clicked( bool checked );
+    void on_cbFFTShift_clicked( bool checked );
+    void on_cbUnwrap_clicked( bool checked );
+    void on_pbChangeSpectrum_clicked();
 
 private:
     bool shifted;
+    bool unwrapped;
+    enum Spectrum spectrum;
 
     Ui::Visualisation *ui;
     QChart* chart;
@@ -41,13 +47,12 @@ private:
     QValueAxis* axisY;
     QVBoxLayout* mainLayout;
 
+    QVector<qreal> yData;
+    QVector<qreal> yDataUnwrapped;
     QVector<QPointF> buffer;        // vector punktów (x,y)
-    QVector<double> radBuffer;
-    QVector<double> unwrappedBuffer;
 
-    double angle(double x, double y);
-    void unwrap(QVector<double> inputBuffer, QVector<double> outputBuffer, int length);
-    inline double angle_norm(double x);
+    void unwrap(QVector<qreal> &inputBuffer, QVector<qreal> &outputBuffer, int length);
+    inline double angle_norm(qreal x);
 };
 
 #endif // VISUALISATION_H

@@ -430,7 +430,7 @@ void MainWindow::processBuffer(QAudioBuffer buffer)
     const qint16* data = buffer.constData<qint16>();        // próbki są w postaci short intów
 
 
-    if( curSize + buffer.sampleCount() <= (1<<14) )     // 2304 próbki to za mało żeby je przetwarzać, w ciągu sekundy jest 44100 * 2 kanały = 88200 próbek
+    if( curSize + buffer.sampleCount() <= (1<<13) )     // 2304 próbki to za mało żeby je przetwarzać, w ciągu sekundy jest 44100 * 2 kanały = 88200 próbek
     {
         for( int i = curSize, j = 0; j < buffer.sampleCount(); i++, j++ )       // pętla dorzuca próbki z kolejnych buforów do wejściowej tablicy aż do uzyskania odpowiedniej ilości próbek
             inputArray[i] = (double)data[j]/SHRT_MAX;       // normalizacja próbek do wartości <-1,1>, aby wyniki transformaty nie wychodziły zbyt duże
