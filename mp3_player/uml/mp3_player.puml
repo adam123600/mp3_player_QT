@@ -1,5 +1,6 @@
 @startuml
 
+
 [*] -down-> StartState
 
 StartState -right> hasPlaylistState: <b>sigHasPlaylist</b>
