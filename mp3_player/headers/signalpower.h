@@ -15,7 +15,7 @@ public:
 private:
    qreal decibels;
    qreal calcPowerOfSignal(QVector<qreal> data, int length);
-   static double toSquare(double value);
+   static qreal toSquare(qreal value);
    qreal convertToDecibels(qreal voltageValue);
 };
 

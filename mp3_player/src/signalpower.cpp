@@ -33,7 +33,7 @@ qreal SignalPower::calcPowerOfSignal(QVector<qreal> data, int length)
 
 }
 
-double SignalPower::toSquare(double value)
+qreal SignalPower::toSquare(qreal value)
 {
     return value*value;
 }
