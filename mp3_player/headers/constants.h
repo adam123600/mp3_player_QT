@@ -1,0 +1,11 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define DEFAULT_VOLUME (50)
+
+#define MIN_SAMPLES (1<<11)
+#define MAX_SAMPLES (1<<16)
+#define DEFAULT_SAMPLES (1<<13)
+#define DEFAULT_SAMPLES_PER_SEC (88200)
+
+#endif // CONSTANTS_H

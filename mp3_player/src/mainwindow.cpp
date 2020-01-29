@@ -7,10 +7,16 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     player = new QMediaPlayer;
+    player->setVolume(DEFAULT_VOLUME);
     playlist = std::make_unique<QMediaPlaylist>();
     actualPlaylistName = "";
     songName = "";
-    levelVolume = 100; // domyslna wartosc dzwieku
+
+    //levelVolume = 100; // domyslna wartosc dzwieku
+
+    levelVolume = DEFAULT_VOLUME; // domyslna wartosc dzwieku
+    samplesCount = DEFAULT_SAMPLES;
+
     visualisation = new Visualisation();// utworzenie nowego okienka
 
     // stateMachine
@@ -432,37 +438,45 @@ void MainWindow::on_pbVisualisation_clicked(bool checked)
         visualisation->show();                      // wyświetlenie tego okienka
         probe = new QAudioProbe();
         probe->setSource(player);                   // ustawienie, aby sonda "śledziła" to co odtwarza player
-        inputArray = new double[1<<14];             // tablica wejściowa będzie przechowywać maksymalnie 2^14 (16834) próbek
+        inputArray = new double[MAX_SAMPLES];       // tablica wejściowa będzie przechowywać maksymalnie 2^14 (16834) próbek
         curSize = 0;                                // początkowa ilość elementów w tablicy z próbkami
         connect( probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)) );
-        connect( visualisation, SIGNAL(shift()), this, SLOT(shift()) );
-        connect( visualisation, SIGNAL(noshift()), this, SLOT(noshift()) );
+        connect( visualisation, SIGNAL( shift()), this, SLOT(shift()) );
+        connect( visualisation, SIGNAL( noshift()), this, SLOT(noshift()) );
+        connect( visualisation, SIGNAL( samplesCountChanged(int)), this, SLOT(arraySizeChanged(int)) );
     }
 }
 
 void MainWindow::processBuffer(QAudioBuffer buffer)
 {
+    visualisation->setSamplesPerSecond( buffer.format().sampleRate() * buffer.format().channelCount() );
     // w buforze zawsze są 2304 próbki (przynajmniej na moim komputerze, sprawdzone empirycznie, nie wiem od czego to zależy)
     const qint16* data = buffer.constData<qint16>();        // próbki są w postaci short intów
+    bufferSize = buffer.sampleCount();
 
-
-    if( curSize + buffer.sampleCount() <= (1<<14) )     // 2304 próbki to za mało żeby je przetwarzać, w ciągu sekundy jest 44100 * 2 kanały = 88200 próbek
+    if( curSize <= samplesCount )
     {
-        for( int i = curSize, j = 0; j < buffer.sampleCount(); i++, j++ )       // pętla dorzuca próbki z kolejnych buforów do wejściowej tablicy aż do uzyskania odpowiedniej ilości próbek
-            inputArray[i] = (double)data[j]/SHRT_MAX;       // normalizacja próbek do wartości <-1,1>, aby wyniki transformaty nie wychodziły zbyt duże
-
-        curSize += buffer.sampleCount();
+        dataIndex = 0;
+        while( curSize <= samplesCount && dataIndex < bufferSize )
+            inputArray[curSize++] = (double)data[dataIndex++]/SHRT_MAX;
     }
-    else    // kiedy już w wejściowej tablicy jest odpowiednia ilość próbek (blisko 2^14 ~ 16384) następuje obliczenie transformaty i wysłanie wyników do okienka (widgetu) visualisation
+    else
     {
-        FastFourier fft(curSize, inputArray);
+        SignalPower signalPower(curSize, inputArray);
+        visualisation->displayDB(signalPower.getPower());
+
+        FastFourier fft(samplesCount, inputArray);
         fft.Calculate();
         if( shifted )
             fft.fftshift();     // opcjonalnie fftshift jak w MatLABie
-        visualisation->prepareData( curSize, fft.getResult() );     // wysyła do okienka visualisation ilość próbek i tablicę próbek transformaty
+        visualisation->prepareData( samplesCount, fft.getResult() );     // wysyła do okienka visualisation ilość próbek i tablicę próbek transformaty
         curSize = 0;
+
+        while( curSize <= samplesCount && dataIndex < bufferSize )             // przepisanie reszty próbek z bufora piosenki do inputArray
+            inputArray[curSize++] = (double)data[dataIndex++]/SHRT_MAX;
     }
 }
+
 
 void MainWindow::shift()
 {
@@ -472,4 +486,9 @@ void MainWindow::shift()
 void MainWindow::noshift()
 {
     shifted = false;
+}
+
+void MainWindow::arraySizeChanged(int samplesCount)
+{
+    this->samplesCount = samplesCount;
 }

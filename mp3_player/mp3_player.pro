@@ -30,12 +30,15 @@ SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
     src/fastfourier.cpp \
-    src/visualisation.cpp
+    src/visualisation.cpp \
+    src/signalpower.cpp
 
 HEADERS += \
         headers/mainwindow.h \
     headers/fastfourier.h \
-    headers/visualisation.h
+    headers/visualisation.h \
+    headers/constants.h \
+    headers/signalpower.h
 
 FORMS += \
         forms/mainwindow.ui \

@@ -8,10 +8,8 @@ FastFourier::FastFourier(int length, double* inputArray)
     this->inputArray = (fftw_complex*)calloc(length, sizeof(fftw_complex));
     outputArray = (fftw_complex*)calloc(length, sizeof(fftw_complex));
     for (int i = 0; i < this->length; i++)
-    {
         this->inputArray[i][REAL] = inputArray[i];
-        this->inputArray[i][IMAG] = 0;
-    }
+        // this->inputArray[i][IMAG] jest już wyzerowane przez calloc
 }
 
 FastFourier::~FastFourier()
