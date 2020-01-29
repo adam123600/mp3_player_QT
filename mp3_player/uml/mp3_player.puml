@@ -1,0 +1,70 @@
+@startuml
+
+
+[*] -down-> StartState
+
+StartState -right> hasPlaylistState: <b>sigHasPlaylist</b>
+
+hasPlaylistState -right-> PlayState: <b>sigNoPlaylist</b>
+hasPlaylistState -left-> StartState: <b>sigNoPlaylist</b>
+hasPlaylistState -right-> PlayState: <b>sigPlaySong</b>
+hasPlaylistState -right-> PlayState: <b>sigSongChange</b>
+
+PlayState -left-> hasPlaylistState: <b>sigNoSong</b>
+PlayState -down-> PauseState: <b>pbPauseMusic</b>   clicked()
+PlayState -left-> StopState: <b>pbStopMusic</b>   clicked()
+PlayState -left-> StartState: <b>sigNoPlaylist</b>
+
+StopState -up-> StartState: <b>sigNoPlaylist</b>
+StopState -up-> hasPlaylistState: <b>sigNoSong</b>
+StopState -right-> PlayState: <b>sigSongChange</b>
+StopState -right-> PlayState: <b>pbPlayMusic</b>   clicked()
+StopState -right-> PlayState: <b>sigPlaySong</b>
+
+PauseState -up-> hasPlaylistState: <b>sigNoSong</b>
+PauseState -left-> StopState: <b>pbStopMusic</b>  clicked()
+PauseState -left-> StartState: <b>sigNoPlaylist</b>
+PauseState -right-> PlayState: <b>sigSongChange</b>
+PauseState -right-> PlayState: <b>sigPlayMusic</b>
+PauseState -right-> PlayState: <b>pbPlayMusic</b>   clicked()
+
+
+
+StartState: <b>pbAddplaylist</b>         enabled          <b>true</b>
+StartState: <b>pbAddSong</b>             enabled           <b>false</b>
+StartState: <b>pbDeleteSong</b>         enabled         <b>false</b>
+StartState: <b>pbVisualisation</b>       enabled        <b>false</b>
+StartState: <b>pbPlayMusic</b>            enabled          <b>false</b>
+StartState: <b>pbStopMusic</b>           enabled          <b>false</b>
+StartState: <b>pbPauseMusic</b>         enabled         <b>false</b>
+StartState: <b>pbNewPlaylist</b>         enabled         <b>false</b>
+StartState: <b>pbDeletePlaylist</b>      enabled        <b>false</b>
+
+
+hasPlaylistState: <b>state</b> entered() -> <b>this</b> slotHasSong
+hasPlaylistState: <b>pbAddplaylist</b>    enabled    <b> true </b>
+
+PlayState: <b>state</b> entered() -> <b>this</b> slotPlay
+PlayState: <b>pbPlayMusic</b>             enabled        <b>false</b>
+PlayState: <b>pbPauseMusic</b>          enabled       <b>true</b>
+PlayState: <b>pbStopMusic</b>             enabled       <b>true</b>
+PlayState: <b>pbNextSingiel</b>           enabled       <b>true</b>
+PlayState: <b>pbPreviousSingiel</b>     enabled     <b>true</b>
+PlayState: <b>pbVisualisation</b>         enabled      <b>true</b>
+
+StopState: <b>state</b> entered() -> <b>this</b> slotStopMusic
+StopState: <b>pbPlayMusic</b>     enabled    <b>true</b>
+StopState: <b>pbPauseMusic</b>    enabled    <b>false</b>
+StopState: <b>pbStopMusic</b>     enabled    <b>false</b>
+StopState: <b>pbNextSingiel</b>   enabled    <b>false</b>
+StopState: <b>pbPreviousSingiel</b>   enabled   <b>false</b>
+StopState: <b>pbVisualisation</b>   enabled   <b>false</b>
+
+PauseState: <b>pbPlayMusic</b>     enabled    <b>true</b>
+PauseState: <b>pbPauseMusic</b>    enabled    <b>false</b>
+PauseState: <b>pbStopMusic</b>     enabled    <b>true</b>
+PauseState: <b>pbNextSingiel</b>   enabled    <b>true</b>
+PauseState: <b>pbPreviousSingiel</b> enabled  <b>true</b>
+PauseState: <b>pbVisualisation</b> enabled    <b>true</b>
+
+@enduml
