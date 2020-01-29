@@ -35,7 +35,8 @@ SOURCES += \
 HEADERS += \
         headers/mainwindow.h \
     headers/fastfourier.h \
-    headers/visualisation.h
+    headers/visualisation.h \
+    headers/constants.h
 
 FORMS += \
         forms/mainwindow.ui \

@@ -18,6 +18,7 @@
 #include "headers/fastfourier.h"
 #include <QtCharts>
 #include "headers/visualisation.h"
+#include "constants.h"
 
 struct time
 {
@@ -77,6 +78,7 @@ private slots:
     void processBuffer(QAudioBuffer buffer);
     void shift();
     void noshift();
+    void arraySizeChanged( int samplesCount );
 
 private:
     Ui::MainWindow *ui;
@@ -93,8 +95,12 @@ private:
 
     // ftt i wizualizacja
     QAudioProbe* probe;
-    int curSize;
-    double* inputArray;
+    double* inputArray;         // tablica próbek, z której będzie liczona transformata Fouriera
+    int curSize;                // aktualna ilość próbek w inputArray
+    int samplesCount;              // żądana ilość próbek w inputArray
+    int bufferSize;             // rozmiar bufora próbek, gotowy bufor jest zgłaszany przez "sondę" klasy QAudioProbe, która sama ustala jego rozmiar (empirycznie wychodzi zawsze 2304 próbki)
+    int dataIndex;              // numer aktualnie przepisywanej próbki z bufora QAudioProbe do inputArray
+
     Visualisation* visualisation;       // instancja okna wizualizacji (widget)
     bool shifted;
 };

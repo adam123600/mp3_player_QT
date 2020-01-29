@@ -11,6 +11,14 @@ Visualisation::Visualisation(QWidget *parent) :
     shifted = false;                // czy zrobić fftshift
     spectrum = amplitude;
     unwrapped = false;
+
+    ui->sliderSamplesCount->setMinimum(MIN_SAMPLES);
+    ui->sliderSamplesCount->setMaximum(MAX_SAMPLES);
+    ui->sliderSamplesCount->setValue(DEFAULT_SAMPLES);
+
+    ui->leSamplesCount->setText( QString::number(DEFAULT_SAMPLES) );
+    samplesPerSecond = DEFAULT_SAMPLES_PER_SEC;
+    ui->labelWindowTime->setText( QString::number((double)DEFAULT_SAMPLES/DEFAULT_SAMPLES_PER_SEC, 'g', 2) + " s" );
     // ******************************************************************************
 
 
@@ -24,7 +32,7 @@ Visualisation::Visualisation(QWidget *parent) :
     chart->addSeries(series);
 
     axisX = new QValueAxis;
-    axisX->setRange(0, 1<<14);
+    axisX->setRange(0, DEFAULT_SAMPLES);
     axisX->setLabelFormat("%g");
     axisX->setTitleText("Samples");
 
@@ -41,6 +49,11 @@ Visualisation::Visualisation(QWidget *parent) :
 
     mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(chartView);
+}
+
+void Visualisation::setSamplesPerSecond( int sps )
+{
+    samplesPerSecond = sps;
 }
 
 Visualisation::~Visualisation()
@@ -137,6 +150,22 @@ void Visualisation::on_pbChangeSpectrum_clicked()
         spectrum = amplitude;
         ui->labelSpectrum->setText("Widmo amplitudowe");
     }
+}
+
+void Visualisation::on_sliderSamplesCount_sliderMoved(int v)
+{
+
+    ui->leSamplesCount->setText( QString::number(v) );
+}
+
+void Visualisation::on_leSamplesCount_textChanged(const QString &s)
+{
+    int v = s.toInt();
+    if( v < MIN_SAMPLES ) v = MIN_SAMPLES;
+    if( v > MAX_SAMPLES ) v = MAX_SAMPLES;
+    ui->sliderSamplesCount->setValue( v );
+    ui->labelWindowTime->setText( QString::number((double)v/samplesPerSecond, 'g', 2) + " s" );
+    emit samplesCountChanged( v );
 }
 
 void Visualisation::unwrap(QVector<qreal> &in, QVector<qreal> &out, int length) {

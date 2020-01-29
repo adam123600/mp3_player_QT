@@ -16,7 +16,7 @@
   <widget class="QPushButton" name="pbChangeSpectrum">
    <property name="geometry">
     <rect>
-     <x>850</x>
+     <x>860</x>
      <y>150</y>
      <width>97</width>
      <height>33</height>
@@ -29,7 +29,7 @@
   <widget class="QLabel" name="labelSpectrum">
    <property name="geometry">
     <rect>
-     <x>830</x>
+     <x>840</x>
      <y>120</y>
      <width>151</width>
      <height>20</height>
@@ -69,6 +69,76 @@
    </property>
    <property name="text">
     <string>Rozwiń widmo fazowe</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="sliderSamplesCount">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>380</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="leSamplesCount">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>320</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelWindowSize">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>250</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <italic>true</italic>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Wielkość okna</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelSamplesCount">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>300</y>
+     <width>101</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ilość próbek</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelWindowTime">
+   <property name="geometry">
+    <rect>
+     <x>840</x>
+     <y>360</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
    </property>
   </widget>
  </widget>
