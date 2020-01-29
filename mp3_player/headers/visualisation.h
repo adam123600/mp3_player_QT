@@ -36,6 +36,7 @@ public slots:
     void on_pbChangeSpectrum_clicked();
     void on_sliderSamplesCount_sliderMoved( int v );
     void on_leSamplesCount_textChanged( const QString &s );
+    void displayDB(qreal dbValue);
 
 private:
     bool shifted;
@@ -57,7 +58,7 @@ private:
     QVector<QPointF> buffer;        // vector punktów (x,y)
 
     void unwrap(QVector<qreal> &inputBuffer, QVector<qreal> &outputBuffer, int length);
-    inline double angle_norm(qreal x);
+    //inline double angle_norm(qreal x);
 };
 
 #endif // VISUALISATION_H

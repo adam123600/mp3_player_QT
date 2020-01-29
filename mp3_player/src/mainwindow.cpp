@@ -442,6 +442,9 @@ void MainWindow::processBuffer(QAudioBuffer buffer)
     }
     else
     {
+        SignalPower signalPower(curSize, inputArray);
+        visualisation->displayDB(signalPower.getPower());
+
         FastFourier fft(samplesCount, inputArray);
         fft.Calculate();
         if( shifted )

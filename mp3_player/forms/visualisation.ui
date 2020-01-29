@@ -141,6 +141,38 @@
     <string>TextLabel</string>
    </property>
   </widget>
+  <widget class="QLCDNumber" name="lcdDBNumber">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>440</y>
+     <width>111</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="smallDecimalPoint">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelDecibels">
+   <property name="geometry">
+    <rect>
+     <x>880</x>
+     <y>410</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Decibels</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

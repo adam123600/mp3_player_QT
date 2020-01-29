@@ -168,6 +168,11 @@ void Visualisation::on_leSamplesCount_textChanged(const QString &s)
     emit samplesCountChanged( v );
 }
 
+void Visualisation::displayDB(qreal dbValue)
+{
+    ui->lcdDBNumber->display(dbValue);
+}
+
 void Visualisation::unwrap(QVector<qreal> &in, QVector<qreal> &out, int length) {
     if( out.size() != length )
         out.resize(length);

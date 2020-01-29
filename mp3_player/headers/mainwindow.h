@@ -19,6 +19,7 @@
 #include <QtCharts>
 #include "headers/visualisation.h"
 #include "constants.h"
+#include "signalpower.h"
 
 struct time
 {
