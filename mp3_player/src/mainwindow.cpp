@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     samplesCount = DEFAULT_SAMPLES;
 
     visualisation = new Visualisation();// utworzenie nowego okienka
+    authors = new Authors();
 
     // stateMachine
     auto stateMachine = new QStateMachine(this);
@@ -491,4 +492,9 @@ void MainWindow::noshift()
 void MainWindow::arraySizeChanged(int samplesCount)
 {
     this->samplesCount = samplesCount;
+}
+
+void MainWindow::on_pbAuthors_clicked()
+{
+    authors->show();
 }

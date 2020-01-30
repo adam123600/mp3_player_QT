@@ -11,6 +11,7 @@ Visualisation::Visualisation(QWidget *parent) :
     shifted = false;                // czy zrobić fftshift
     spectrum = amplitude;
     unwrapped = false;
+    logarithm = false;
 
     ui->sliderSamplesCount->setMinimum(MIN_SAMPLES);
     ui->sliderSamplesCount->setMaximum(MAX_SAMPLES);
@@ -73,10 +74,18 @@ void Visualisation::prepareData(int length, fftw_complex *data)
 
     if( spectrum == amplitude )
     {
-        for( int i = 0; i < length; i++ )
-            yData.append( sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG]) );
-
-        axisY->setRange( 0, 3000 );
+        if( logarithm )
+        {
+            axisY->setRange( 0, 10 );
+            for( int i = 0; i < length; i++ )
+                yData.append( log(sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG])) );
+        }
+        else
+        {
+            axisY->setRange( 0, 3000 );
+            for( int i = 0; i < length; i++ )
+                yData.append( sqrt(data[i][REAL]*data[i][REAL]+data[i][IMAG]*data[i][IMAG]) );
+        }
     }
     else        // spectrum == phase
     {
@@ -134,6 +143,14 @@ void Visualisation::on_cbUnwrap_clicked(bool checked)
         unwrapped = true;
     else
         unwrapped = false;
+}
+
+void Visualisation::on_cbLogSpectrum_clicked(bool checked)
+{
+    if( checked )
+        logarithm = true;
+    else
+        logarithm = false;
 }
 
 

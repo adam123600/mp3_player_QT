@@ -33,6 +33,7 @@ public slots:
     void prepareData(int length, fftw_complex* data);
     void on_cbFFTShift_clicked( bool checked );
     void on_cbUnwrap_clicked( bool checked );
+    void on_cbLogSpectrum_clicked( bool checked );
     void on_pbChangeSpectrum_clicked();
     void on_sliderSamplesCount_sliderMoved( int v );
     void on_leSamplesCount_textChanged( const QString &s );
@@ -41,6 +42,7 @@ public slots:
 private:
     bool shifted;
     bool unwrapped;
+    bool logarithm;
     enum Spectrum spectrum;
     int samplesPerSecond;       // częstotliwość * liczba kanałów (mono/stereo)
 

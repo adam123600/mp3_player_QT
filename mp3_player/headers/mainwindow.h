@@ -20,6 +20,7 @@
 #include "headers/visualisation.h"
 #include "constants.h"
 #include "signalpower.h"
+#include "authors.h"
 
 struct time
 {
@@ -81,6 +82,8 @@ private slots:
     void noshift();
     void arraySizeChanged( int samplesCount );
 
+    void on_pbAuthors_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -104,6 +107,8 @@ private:
 
     Visualisation* visualisation;       // instancja okna wizualizacji (widget)
     bool shifted;
+
+    Authors* authors;
 };
 
 #endif // MAINWINDOW_H
