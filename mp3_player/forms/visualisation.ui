@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>860</x>
-     <y>150</y>
+     <y>190</y>
      <width>97</width>
      <height>33</height>
     </rect>
@@ -30,7 +30,7 @@
    <property name="geometry">
     <rect>
      <x>840</x>
-     <y>120</y>
+     <y>160</y>
      <width>151</width>
      <height>20</height>
     </rect>
@@ -171,6 +171,20 @@
    </property>
    <property name="text">
     <string>Decibels</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="cbLogSpectrum">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>90</y>
+     <width>171</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>zlogarytmuj widmo
+amplitudowe</string>
    </property>
   </widget>
  </widget>
