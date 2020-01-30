@@ -29,20 +29,23 @@ CONFIG += c++14
 SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
-    src/fastfourier.cpp \
-    src/visualisation.cpp \
-    src/signalpower.cpp
+        src/fastfourier.cpp \
+        src/visualisation.cpp \
+        src/signalpower.cpp \
+        src/authors.cpp
 
 HEADERS += \
         headers/mainwindow.h \
-    headers/fastfourier.h \
-    headers/visualisation.h \
-    headers/constants.h \
-    headers/signalpower.h
+        headers/fastfourier.h \
+        headers/visualisation.h \
+        headers/constants.h \
+        headers/signalpower.h \
+        headers/authors.h
 
 FORMS += \
         forms/mainwindow.ui \
-    forms/visualisation.ui
+    forms/visualisation.ui \
+    forms/authors.ui
 
 LIBS += /usr/local/lib/libfftw3.a
 

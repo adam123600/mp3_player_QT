@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Wizualizacja</string>
   </property>
   <widget class="QPushButton" name="pbChangeSpectrum">
    <property name="geometry">
@@ -170,7 +170,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Decibels</string>
+    <string>Moc [db]</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="cbLogSpectrum">
