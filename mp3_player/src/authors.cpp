@@ -6,7 +6,7 @@ Authors::Authors(QWidget *parent) :
     ui(new Ui::Authors)
 {
     ui->setupUi(this);
-    QPixmap pix("/home/student/Pobrane/autorzy.png");
+    QPixmap pix("../mp3_player/autorzy.png");
     ui->label->setPixmap(pix);
 }
 
